@@ -13,6 +13,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
 
   const [variant, setVariant] = useState("login");
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleVariant = useCallback(() => {
     setVariant((currentVariant) =>
@@ -21,24 +22,28 @@ const Auth = () => {
   }, []);
 
   const login = useCallback(async () => {
+    setIsLoading(true);
     try {
       await signIn("credentials", {
         email,
         password,
         callbackUrl: "/profiles",
       });
+      setIsLoading(false);
     } catch (err) {
       console.log(err);
     }
   }, [email, password]);
 
   const register = useCallback(async () => {
+    setIsLoading(true);
     try {
       await axios.post("/api/register", {
         email,
         name,
         password,
       });
+      setIsLoading(false);
       login();
     } catch (err) {
       console.log(err);
@@ -82,6 +87,7 @@ const Auth = () => {
               />
             </div>
             <button
+              disabled={isLoading}
               onClick={variant === "login" ? login : register}
               className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 transition"
             >
